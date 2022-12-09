@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Copyright 2010 Google Inc.
 # Licensed under the Apache License, Version 2.0
 # http://www.apache.org/licenses/LICENSE-2.0
@@ -8,6 +8,8 @@
 
 import sys
 import re
+import os
+from operator import itemgetter
 
 """Baby Names exercise
 
@@ -41,7 +43,18 @@ def extract_names(filename):
   ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
   """
   # +++your code here+++
-  return
+  inputFile = open(filename, 'r', encoding="utf-8")
+  fileString = inputFile.read()
+  match = re.search(r'value="\d\d\d\d"', fileString)
+  if match:
+    year = match.group()[-5:-1]
+  rawNames = re.findall(r'<td>(\w+)</td><td>(\w+)</td><td>(\w+)</td>', fileString)
+  babyNames = []
+  for i in range(1000):
+    babyNames.append(list([year, rawNames[i][1] + ' ' + rawNames[i][0]]))
+    babyNames.append(list([year, rawNames[i][2] + ' ' + rawNames[i][0]]))
+  babyNames = sorted(babyNames, key=itemgetter(1))
+  return babyNames
 
 
 def main():
@@ -51,7 +64,7 @@ def main():
   args = sys.argv[1:]
 
   if not args:
-    print 'usage: [--summaryfile] file [file ...]'
+    print('usage: [--summaryfile] file [file ...]')
     sys.exit(1)
 
   # Notice the summary flag and remove it from args if it is present.
@@ -63,6 +76,16 @@ def main():
   # +++your code here+++
   # For each filename, get the names, then either print the text output
   # or write it to a summary file
-  
+  fileName = args[0]
+
+  outputFile = open(fileName, 'w', encoding="utf-8")
+  currentDirectory = os.fsdecode(os.getcwd())
+  fileList = [fileName for fileName in os.listdir(currentDirectory) if '.html' in fileName]
+  for file in fileList:
+    nameList = extract_names(file)
+    for list in nameList:
+      outputFile.write(list[0] + ' ' + list[1] + '\n')
+  outputFile.close()
+
 if __name__ == '__main__':
   main()
