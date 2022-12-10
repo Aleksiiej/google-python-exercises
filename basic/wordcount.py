@@ -1,4 +1,4 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python3 -tt
 # Copyright 2010 Google Inc.
 # Licensed under the Apache License, Version 2.0
 # http://www.apache.org/licenses/LICENSE-2.0
@@ -45,25 +45,32 @@ import sys
 # and builds and returns a word/count dict for it.
 # Then print_words() and print_top() can just call the utility function.
 
+import string
 from operator import itemgetter
 
 def create_dict_from_file(filename):
   file = open(filename, 'r' , encoding='utf-8')
-  words = file.read().split()
-  loweredWords = [word.lower() for word in words]
+  loweredWords = [word.lower() for word in file.read().split()]
+  file.close()
+  filteredWords = [word.translate(str.maketrans('', '', string.punctuation)) for word in loweredWords]
   dict = {}
-  for word in loweredWords:
+  for word in filteredWords:
     if dict.get(word) == None:
       dict[word] = 1
     else:
       dict[word] += 1
-  sortedDict = {key:dict[key] for key in sorted(dict)}
+  sortedDict = {key:dict[key] for key in sorted(dict)} # alphabetical sorting
   return sortedDict
 
 def print_words(filename):
   dict = create_dict_from_file(filename)
   for k, v in dict.items(): print(k, ' ', v)
-  
+
+def print_top(filename):
+  sortedTempList = sorted(create_dict_from_file(filename).items(), key=itemgetter(1), reverse=True)
+  for k, v in sortedTempList[:20]:
+    print(k, ' ', v)
+
 ###
 
 # This basic command line argument parsing code is provided and
@@ -85,3 +92,4 @@ def main():
 
 if __name__ == '__main__':
   main()
+
