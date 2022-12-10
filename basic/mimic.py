@@ -1,4 +1,4 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python3 -tt
 # Copyright 2010 Google Inc.
 # Licensed under the Apache License, Version 2.0
 # http://www.apache.org/licenses/LICENSE-2.0
@@ -43,24 +43,56 @@ columns, so the output looks better.
 
 import random
 import sys
-
+import string
 
 def mimic_dict(filename):
   """Returns mimic dict mapping each word to list of words which follow it."""
-  # +++your code here+++
-  return
+  # +++your code here+++  
+  file = open(filename, 'r' , encoding='utf-8')
+  words = file.read().split()
+  file.close()
+  formattedWords = [ word.translate(str.maketrans('', '', string.punctuation)).lower() for word in words]
+  formattedWords = list(filter(None, formattedWords))
+  previousWord = ''
+  mimic_dict = {}
+  for word in formattedWords:
+    if previousWord == '':
+      pass
+    elif mimic_dict.get(previousWord) == None:
+      mimic_dict[previousWord] = [word]
+    else:
+      mimic_dict[previousWord].append(word)
+    previousWord = word
+  return mimic_dict
 
 
 def print_mimic(mimic_dict, word):
   """Given mimic dict and start word, prints 200 random words."""
   # +++your code here+++
+  wordCounter = 0
+  wordIndex = 0
+  previousWord = ''
+  for key in mimic_dict:
+    if wordCounter == 0:
+      print(key + ' ', end='')
+      wordCounter += 1
+    elif wordCounter != 0:
+      randomWord = random.choice(mimic_dict[key])
+      if(key == previousWord):
+        print(randomWord + ' ', end='')
+      else:
+        print(key + ' ' + randomWord + ' ', end='')
+      if(wordCounter % 10 == 0):
+        print('\n')
+      wordCounter += 1
+      previousWord = randomWord
+  print('\n')
   return
-
 
 # Provided main(), calls mimic_dict() and mimic()
 def main():
   if len(sys.argv) != 2:
-    print 'usage: ./mimic.py file-to-read'
+    print('usage: ./mimic.py file-to-read')
     sys.exit(1)
 
   dict = mimic_dict(sys.argv[1])
