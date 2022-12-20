@@ -45,6 +45,7 @@ def extract_names(filename):
   # +++your code here+++
   inputFile = open(filename, 'r', encoding="utf-8")
   fileString = inputFile.read()
+  year = ''
   match = re.search(r'value="\d\d\d\d"', fileString)
   if match:
     year = match.group()[-5:-1]
@@ -76,16 +77,16 @@ def main():
   # +++your code here+++
   # For each filename, get the names, then either print the text output
   # or write it to a summary file
-  fileName = args[0]
-
-  outputFile = open(fileName, 'w', encoding="utf-8")
-  currentDirectory = os.fsdecode(os.getcwd())
-  fileList = [fileName for fileName in os.listdir(currentDirectory) if '.html' in fileName]
-  for file in fileList:
-    nameList = extract_names(file)
-    for list in nameList:
-      outputFile.write(list[0] + ' ' + list[1] + '\n')
-  outputFile.close()
+  for filename in args:
+    names = extract_names(filename)
+    if summary:
+      outf = open(filename + '.summary', 'w')
+      for line in names:
+        outf.write(line[0] + ' ' + line[1] + '\n')
+      outf.close()
+    else:
+      for line in names:
+        print(line[0] + ' ' + line[1])
 
 if __name__ == '__main__':
   main()

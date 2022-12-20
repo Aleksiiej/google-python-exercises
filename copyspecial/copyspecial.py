@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Copyright 2010 Google Inc.
 # Licensed under the Apache License, Version 2.0
 # http://www.apache.org/licenses/LICENSE-2.0
@@ -10,7 +10,6 @@ import sys
 import re
 import os
 import shutil
-import commands
 
 """Copy Special exercise
 """
@@ -18,6 +17,18 @@ import commands
 # +++your code here+++
 # Write functions and modify main() to call them
 
+def get_special_paths(dir):
+  filenames = os.listdir(dir)
+  result = []
+  for fname in filenames:
+    match = re.search(r'__(\w+)__', fname)
+    if match:
+      result.append(os.path.abspath((os.path.join(dir, fname))))
+  return result
+
+def copy_to(paths, dir):
+  print(paths)
+  return
 
 
 def main():
@@ -28,7 +39,7 @@ def main():
   # which is the script itself.
   args = sys.argv[1:]
   if not args:
-    print "usage: [--todir dir][--tozip zipfile] dir [dir ...]";
+    print("usage: [--todir dir][--tozip zipfile] dir [dir ...]")
     sys.exit(1)
 
   # todir and tozip are either set from command line
@@ -45,11 +56,15 @@ def main():
     del args[0:2]
 
   if len(args) == 0:
-    print "error: must specify one or more dirs"
+    print("error: must specify one or more dirs")
     sys.exit(1)
 
   # +++your code here+++
   # Call your functions
+
+  dir = args[1]
+  #print(dir)
+  copy_to(get_special_paths(dir), todir)
   
 if __name__ == "__main__":
   main()
