@@ -27,9 +27,16 @@ def get_special_paths(dir):
   return result
 
 def copy_to(paths, dir):
-  print(paths)
+  for path in paths:
+    shutil.copy(path, os.path.abspath(dir))
   return
 
+def zip_to(paths, zipPath, zipName):
+  cmd = 'zip -j ' + zipName
+  for path in paths:
+    cmd += ' ' + path
+  os.system(cmd)
+  return
 
 def main():
   # This basic command line argument parsing code is provided.
@@ -45,15 +52,19 @@ def main():
   # todir and tozip are either set from command line
   # or left as the empty string.
   # The args array is left just containing the dirs.
+  isTodir = False
   todir = ''
   if args[0] == '--todir':
     todir = args[1]
     del args[0:2]
-
+    isTodir = True
+  
+  isTozip = False
   tozip = ''
   if args[0] == '--tozip':
     tozip = args[1]
     del args[0:2]
+    isTozip = True
 
   if len(args) == 0:
     print("error: must specify one or more dirs")
@@ -63,8 +74,15 @@ def main():
   # Call your functions
 
   dir = args[1]
-  #print(dir)
-  copy_to(get_special_paths(dir), todir)
+  specialPaths = get_special_paths(dir)
+  if isTodir == False and isTozip == False:
+    for path in specialPaths:
+      print(path)
+  if isTodir:
+    copy_to(specialPaths, os.path.abspath(todir))
+  if isTozip:
+    zip_to(specialPaths, specialPaths, tozip)
+    
   
 if __name__ == "__main__":
   main()
